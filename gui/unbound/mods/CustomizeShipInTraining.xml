@@ -1,0 +1,253 @@
+<ui>
+	<block className="ModalWindowTrainingRoom">
+		<bind name="visible" value="trainingRoomEntity"/>
+		<bind name="lag" value="'lagAfterAddedToStage'"/>
+		<bind name="request" value="'lagAfterAddedToStage'; 'dockReady'"/>
+		<bind name="firstEntityDH" value="'trainingRoomEntity'; CC.trainingRoomWindowState"/>
+		<bind name="watchDH" value="'windowState'; ['trainingRoomEntity.trainingRoomWindowState.evUpdate']; trainingRoomEntity.trainingRoomWindowState.state"/>
+		<bind name="watchDH" value="'notReadyWindowState'; ['trainingRoomEntity.trainingRoomWindowState.evUpdate']; trainingRoomEntity.trainingRoomWindowState.notReadyWindowState"/>
+		<bind name="watchDH" value="'windowInset'; ['trainingRoomEntity.trainingRoomWindowState.evUpdate']; trainingRoomEntity.trainingRoomWindowState.inset"/>
+		<bind name="watchDH" value="'windowInsetLabel'; ['trainingRoomEntity.trainingRoomWindowState.evUpdate']; trainingRoomEntity.trainingRoomWindowState.insetLabel"/>
+		<block>
+			<bind name="collectionDH" value="CC.userPrefs; 'userPrefsCollection'"/>
+			<bind name="entityDH" value="'userPrefsEntity'; userPrefsCollection[0].id"/>
+			<bind name="watchDH" value="'userPrefs'; ['userPrefsEntity.userPrefs.evUserPrefsChanged']; userPrefsEntity.userPrefs.userPrefs"/>
+			<styleClass value="$FullsizeAbsolute"/>
+			<bind name="appear" value="'addedToStage'; 0.15; 0.3 + 0 * 0.075; {alpha: 0, top: 10}; {alpha: 1, top: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
+			<bind name="appear" value="'startHide'; 0.15; 0 * 0.055; {alpha: 1, top: 0}; {alpha: 0, top: -10}; SC.Common.EASING_FUNCTIONS.IN_QUAD"/>
+			<bind name="watch" value="'curMapUrl';	(userPrefs.trainingRoomMapGPName == null)	? ('url:../bg/maps_bg_blur/i01_tutorial.jpg')
+																				: ('url:../bg/maps_bg_blur/' + userPrefs.trainingRoomMapGPName + '.jpg')"/>
+			<block>
+				<styleClass value="$FullsizeAbsolute"/>
+				<bind name="instance" value="'BackgroundAnimatedSwitcher'; {_bgSymbol:  curMapUrl }"/>
+			</block>
+			<block className="DeclareBlurLayer">
+				<bind name="primaryEntityDH" value="'isBlurEnabledEntity'; CC.preference; 'graphics.GUI.blur'"/>
+				<bind name="watchDH" value="'isBlurEnabled'; ['isBlurEnabledEntity.preference.evValueChanged']; isBlurEnabledEntity.preference.value"/>
+				<bind name="visible" value="isBlurEnabled"/>
+				<block className="transparentPixel" type="native">
+					<bind name="blurLayer" value="0"/>
+				</block>
+				<style>
+					<position value="absolute"/>
+				</style>
+			</block>
+		</block>
+		<block>
+			<styleClass value="$FullsizeAbsolute"/>
+			<bind name="child" value="windowInset; {_label: windowInsetLabel}; 'TrainingRoomSettingsInset'; 'TrainingRoomMainInset'; 'TrainingRoomTransitionInset'"/>
+		</block>
+		<!--mod-->
+		<block>
+			<bind name="visible" value="windowInset != 0"/>
+			<style>
+				<width value="100%"/>
+				<height value="100%"/>
+				<top value="10%"/>
+				<align value="center"/>
+			</style>
+			<styleClass value="$FullsizeAbsolute"/>
+			<bind name="var" value="{isShipCustomizeVisible: false, isCrewCustomizeVisible: false}"/>
+			<bind name="catch" value="'shipCustomizeVisibleChanged'; {isShipCustomizeVisible: !isShipCustomizeVisible, isCrewCustomizeVisible: false}"/>
+			<bind name="catch" value="'crewCustomizeVisibleChanged'; {isCrewCustomizeVisible: !isCrewCustomizeVisible, isShipCustomizeVisible: false}"/>
+			<block>
+				<!--Upgrades/Consumables-->
+				<bind name="instance" value="'DefaultButton'; {	_width: '240px',
+													_enabled: true,
+													_label: isShipCustomizeVisible ? 'IDS_CLOSE' : 'IDS_SHIP_MANAGEMENT_MODULES_AND_MODERNIZATIONS_BLOCK_HEADER', 
+													_dispatch: 'shipCustomizeVisibleChanged', 
+												}"/>
+				<!--Crew-->
+				<bind name="instance" value="'DefaultButton'; {	_width: '240px',
+													_enabled: true,
+													_label: isCrewCustomizeVisible ? 'IDS_CLOSE' : 'IDS_CREW', 
+													_dispatch: 'crewCustomizeVisibleChanged', 
+												}"/>
+			</block>
+			<block>
+				<!--bind name="style" value="'marginBottom';	isShipCustomizeVisible	?	'-300px' : '0px'"/-->
+				<style>
+					<width value="90%"/>
+					<height value="80%"/>
+				</style>
+				<bind name="instance" value="'ShipManagementMainInsetForMod';	isShipCustomizeVisible ? {} : null"/>
+				<bind name="instance" value="'ModalWindowCrewManagement'; 		isCrewCustomizeVisible ? {} : null"/>
+			</block>
+		</block>
+		<!--mod-->
+	</block>
+	
+	<block className="ShipManagementMainInsetForMod">
+		<bind name="primaryEntityDH" value="'isBlurEnabledEntity'; CC.preference; 'graphics.GUI.blur'"/>
+		<bind name="watchDH" value="'isBlurEnabled'; ['isBlurEnabledEntity.preference.evValueChanged']; isBlurEnabledEntity.preference.value"/>
+		<bind name="lag" value="'lagAfterAddedToStage'; null; true; 0.4; 'addedToStage'; 3; SC.Common.UBSCOPE_EVENT_DIRECTIONS.DOWN"/>
+		<bind name="firstEntityDH" value="'dockEntity'; CC.dockDataMarker"/>
+		<bind name="watchDH" value="'shipId'; ['dockEntity.shipSelection.evShipUpdate']; dockEntity.shipSelection.currentShipId"/>
+		<bind name="watchDH" value="'shipIdForModuleInset'; ['dockEntity.shipSelection.evShipViewUpdate']; dockEntity.shipSelection.currentShipIdForModuleInset"/>
+		<bind name="watchDH" value="'shipIdForResearch'; ['dockEntity.shipSelection.evShipUpdate'] ; dockEntity.shipSelection.currentShipIdForResearch"/>
+		<bind name="handleEventDH" value="'dockEntity.shipSelection.evShipViewUpdate'; 'shipIdForModuleInsetChanged'; {}; SC.Common.UBSCOPE_EVENT_DIRECTIONS.NONE"/>
+		<bind name="primaryEntityDH" value="'shipEntity'; CC.ship; shipIdForModuleInset; 'evUpdate'"/>
+		<bind name="watchDH" value="'shipInfo'; ['shipEntity.ship.evUpdate', 'shipEntity.ship.evCurrentSkinChanged', 'shipEntity.ship.evFlagNameWithCrewChanged']; shipEntity.ship"/>
+		<bind name="watchDH" value="'upgradableShipInfo'; ['shipEntity.upgradableShipInfo.evUpdate']; shipEntity.upgradableShipInfo"/>
+		<bind name="primaryEntityDH" value="'ownShipEntity'; CC.ownShip; shipIdForModuleInset"/>
+		<bind name="watchDH" value="'ownShipInfo'; ['ownShipEntity.ship.evUpdate', 'ownShipEntity.ship.evCurrentSkinChanged']; ownShipEntity.ship"/>
+		<bind name="watch" value="'isOwned'; ownShipEntity != null"/>
+		<bind name="collectionDH" value="CC.userPrefs; 'userPrefsCollection'"/>
+		<bind name="entityDH" value="'userPrefsEntity'; userPrefsCollection[0].id"/>
+		<bind name="watchDH" value="'userPrefs'; ['userPrefsEntity.userPrefs.evUserPrefsChanged']; userPrefsEntity.userPrefs.userPrefs"/>
+		<!--mod
+		<bind name="watch" value="'carouselRows'; (userPrefs.curRowCountIndex == null) ? 0 : userPrefs.curRowCountIndex"/>
+		-->
+		<bind name="watch" value="'isSmallCarouselView'; (userPrefs.isSmallCarouselView == null) ? false : userPrefs.isSmallCarouselView"/>
+		<bind name="firstEntityDH" value="'featuresEntity'; CC.shipUniqueFeatures"/>
+		<bind name="watchDH" value="'featuresList'; ['featuresEntity.shipUniqueFeatures.evChanged']; featuresEntity.shipUniqueFeatures.featuresList"/>
+		<bind name="watchDH" value="'isSpecialPointsVisible'; []; featuresList.length &gt; 0"/>
+		<bind name="collectionDH" value="CC.module; 'unpurchasableModuleCollection'; 'cannotBuy'"/>
+		<bind name="watch" value="'hasUnpurchasableModules'; unpurchasableModuleCollection.length &gt; 0"/>
+		<bind name="soundOn" value="'addedToStage'; 'management'; 'dock_inset'"/>
+		<bind name="watch" value="'previewModuleId'; userPrefs.previewModuleId"/>
+		<bind name="action" value="'previewModuleId' + varChanged; 'setCompareData'; {moduleId: previewModuleId ? previewModuleId : null}"/>
+		<bind name="action" value="'removedFromStage'; previewModuleId ? 'setUserPref' : null; {value: 0, name: 'previewModuleId'}"/>
+		<bind name="action" value="'onLostTop';	previewModuleId ? 'setUserPref' : null; {value: 0, name: 'previewModuleId'}"/>
+		<bind name="action" value="'delayedShipIdForModuleInsetChanged';	previewModuleId	? 'setUserPref'
+																		: null; {value: 0, name: 'previewModuleId'}"/>
+		<bind name="action" value="'isInFormation' + varChanged;	previewModuleId	? 'setUserPref'
+																: null; {value: 0, name: 'previewModuleId'}"/>
+		<bind name="action" value="'removedFromStage'; userPrefs.consumablesOrderCustomizationActive ? 'setUserPref'
+																					: null; {value: false, name: 'consumablesOrderCustomizationActive'}"/>
+		<bind name="action" value="'removedFromStage'; userPrefs.consumablesOrderCustomizationActive ? 'setConsumablesOrderCustomizationActivity'
+																					: null; {isActive: false}"/>
+		<bind name="action" value="'shipInfo' + varChanged;	userPrefs.consumablesOrderCustomizationActive &amp;&amp;
+														(!isOwned || shipInfo.subtype == ShipTypes.AircraftCarrier)	? 'setUserPref'
+																													: null; {value: false, name: 'consumablesOrderCustomizationActive'}"/>
+		<bind name="action" value="'shipInfo' + varChanged;	userPrefs.consumablesOrderCustomizationActive &amp;&amp;
+														(!isOwned || shipInfo.subtype == ShipTypes.AircraftCarrier)	? 'setConsumablesOrderCustomizationActivity'
+																													: null; {isActive: false}"/>
+		<styleClass value="$Fullsize"/>
+		<block>
+			<styleClass value="$FullsizeAbsolute"/>
+			<bind name="visible" value="!isBlurEnabled"/>
+			<bind name="appear" value="'addedToStage'; 0; 0; {alpha: 0}; {alpha: 0}"/>
+			<bind name="appear" value="'lagAfterAddedToStage'; 0.3; 0.05; {alpha: 0}; {alpha: 1}"/>
+			<bind name="appear" value="'startShow'; 0.3; 0; {alpha: 0}; {alpha: 1}"/>
+			<bind name="appear" value="'startHide'; 0.15; 0; {alpha: 1}; {alpha: 0}"/>
+			<style>
+				<marginTop value="-60px"/>
+			</style>
+			<bind name="instance" value="'BackgroundAnimatedSwitcher'; { _bgSymbol: 'url:../bg/nations_tree_v2.jpg' }"/>
+		</block>
+		<block>
+			<bind name="visible" value="isBlurEnabled"/>
+			<styleClass value="$FullsizeAbsolute"/>
+			<block className="mc_blurmap_medium" type="native">
+				<styleClass value="$FullsizeAbsolute"/>
+				<bind name="appear" value="'addedToStage'; 0; 0; {alpha: 0}; {alpha: 0}"/>
+				<bind name="appear" value="'lagAfterAddedToStage'; 0.3; 0.05; {alpha: 0}; {alpha: 1}"/>
+				<bind name="appear" value="'startShow'; 0.3; 0; {alpha: 0}; {alpha: 1}"/>
+				<bind name="appear" value="'startHide'; 0.15; 0; {alpha: 1}; {alpha: 0}"/>
+				<bind name="blurMap" value="0"/>
+			</block>
+			<block>
+				<styleClass value="$FullsizeAbsolute"/>
+				<bind name="appear" value="'addedToStage'; 0; 0; {alpha: 0}; {alpha: 0}"/>
+				<bind name="appear" value="'lagAfterAddedToStage'; 0.3; 0.05; {alpha: 0}; {alpha: 1}"/>
+				<bind name="appear" value="'startShow'; 0.3; 0; {alpha: 0}; {alpha: 1}"/>
+				<bind name="appear" value="'startHide'; 0.15; 0; {alpha: 1}; {alpha: 0}"/>
+				<style>
+					<backgroundColor value="0x80000700"/>
+				</style>
+			</block>
+		</block>
+		<block>
+			<bind name="appear" value="'addedToStage'; 0; 0; {alpha: 0}; {alpha: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
+			<bind name="appear" value="'lagAfterAddedToStage'; 0.15; 1*0.075; {alpha: 0, top: 10}; {alpha: 1, top: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
+			<style>
+				<position value="absolute"/>
+				<top value="8px"/>
+				<left value="8px"/>
+				<width value="22px"/>
+				<height value="22px"/>
+			</style>
+			<bind name="style" value="'backgroundImage'; 'url:../service_kit/icons/icon_question_mark_grey.png'"/>
+			<bind name="tooltip" value="'QuestionMarkIconOnShipManagmentScreenTooltip'; {}"/>
+		</block>
+		<bind name="var" value="{isManagementVisible: true}"/>
+		<bind name="dispatch" value="'shipIdForModuleInsetChanged'; 'delayedShipIdForModuleInsetChanged'; {}; SC.Common.UBSCOPE_EVENT_DIRECTIONS.NONE; 0.05"/>
+		<bind name="lag" value="'lagAfterChangedShipIdForModuleInset'; null; true; 0.4; 'delayedShipIdForModuleInsetChanged'; 3; SC.Common.UBSCOPE_EVENT_DIRECTIONS.NONE; null"/>
+		<bind name="catch" value="'shipIdForModuleInsetChanged'; {isManagementVisible: false}"/>
+		<bind name="catch" value="'lagAfterChangedShipIdForModuleInset'; {isManagementVisible: true}"/>
+		<bind name="var" value="{isScreenOpened: false}"/>
+		<bind name="catch" value="'addedToStage'; {isScreenOpened: false}"/>
+		<bind name="dispatch" value="'addedToStage'; 'delayedAddedToStage'; {}; SC.Common.UBSCOPE_EVENT_DIRECTIONS.NONE; 0.1"/>
+		<bind name="catch" value="'delayedAddedToStage'; {isScreenOpened: true}"/>
+		<block>
+			<bind name="appear" value="'shipIdForModuleInsetChanged'; 0; 0; {visible: 0}; {visible: 0}"/>
+			<bind name="appear" value="'lagAfterChangedShipIdForModuleInset'; 0; 0; {visible: 1}; {visible: 1}"/>
+			<bind name="appear" value="'addedToStage'; 0; 0; {alpha: 0}; {alpha: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
+			<bind name="appear" value="'lagAfterAddedToStage'; 0.15; 2*0.075; {alpha: 0, top: 10}; {alpha: 1, top: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
+			<styleClass value="$Fullsize"/>
+			<style>
+				<marginRight value="330px"/>
+				<marginTop value="38px"/>
+			</style>
+			<!--mod
+			<bind name="style" value="'marginBottom';	isSmallCarouselView	?	(carouselRows == 1)		? '263px' :
+																(carouselRows == 2)		? '326px' 
+																						: '200px'
+															: '200px'"/>
+			-->
+			<block>
+				<bind name="visible" value="isManagementVisible"/>
+				<styleClass value="$DefaultScrollBar"/>
+				<style>
+					<width value="100%"/>
+					<height value="100%f"/>
+					<itemHeight value="22px"/>
+				</style>
+				<bind name="controller" value="'lesta.unbound.controls.ControllerAutoScroll'"/>
+				<bind name="event" value="'lagAfterChangedShipIdForModuleInset'; instantScrollToFirstItem"/>
+				<bind name="event" value="'addedToStage'; instantScrollToFirstItem"/>
+				<block>
+					<bind name="fade" value="isManagementVisible; isScreenOpened ? 0.2 : 0; {alpha: 0}; {alpha: 1}"/>
+					<style>
+						<width value="100%"/>
+						<paddingTop value="720:0,1080:24ah"/>
+					</style>
+					<block>
+						<style>
+							<width value="50%"/>
+							<marginLeft value="1280:12,1920:48aw"/>
+							<marginRight value="1280:6,1920:24aw"/>
+						</style>
+						<block>
+							<style>
+								<width value="100%"/>
+							</style>
+							<bind name="style" value="'marginBottom'; isSpecialPointsVisible ? '24px' : 0"/>
+							<bind name="instance" value="hasUnpurchasableModules ? 'ShipParallelModulesLayout' : 'ShipModulesLayout'; {}"/>
+						</block>
+						<block>
+							<bind name="visible" value="isSpecialPointsVisible"/>
+							<style>
+								<width value="100%"/>
+							</style>
+							<bind name="instance" value="'ShipSpecialPointsLayout'; {}"/>
+						</block>
+					</block>
+					<block>
+						<style>
+							<width value="50%"/>
+							<marginLeft value="1280:6,1920:24aw"/>
+							<marginRight value="1280:12,1920:48aw"/>
+						</style>
+						<bind name="instance" value="'CommonMiscLayout'; { shipSubType: shipInfo.subtype }"/>
+					</block>
+					<style>
+						<flow value="horizontal"/>
+					</style>
+				</block>
+			</block>
+		</block>
+	</block>
+
+</ui>	
