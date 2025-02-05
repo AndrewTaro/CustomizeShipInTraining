@@ -92,6 +92,7 @@
 		<bind name="primaryEntityDH" value="'ownShipEntity'; CC.ownShip; shipIdForModuleInset"/>
 		<bind name="watchDH" value="'ownShipInfo'; ['ownShipEntity.ship.evUpdate', 'ownShipEntity.ship.evCurrentSkinChanged']; ownShipEntity.ship"/>
 		<bind name="watch" value="'isOwned'; ownShipEntity != null"/>
+		<bind name="watch" value="'isEventShip'; shipInfo.group == SC.Ships.SHIP_GROUPS.EVENT"/>
 		<bind name="collectionDH" value="CC.userPrefs; 'userPrefsCollection'"/>
 		<bind name="entityDH" value="'userPrefsEntity'; userPrefsCollection[0].id"/>
 		<bind name="watchDH" value="'userPrefs'; ['userPrefsEntity.userPrefs.evUserPrefsChanged']; userPrefsEntity.userPrefs.userPrefs"/>
@@ -102,6 +103,8 @@
 		<bind name="firstEntityDH" value="'featuresEntity'; CC.shipUniqueFeatures"/>
 		<bind name="watchDH" value="'featuresList'; ['featuresEntity.shipUniqueFeatures.evChanged']; featuresEntity.shipUniqueFeatures.featuresList"/>
 		<bind name="watchDH" value="'isSpecialPointsVisible'; []; featuresList.length &gt; 0"/>
+		<bind name="collectionDH" value="CC.gameplayFeature; 'gpFeaturesCollection'; ''"/>
+		<bind name="watch" value="'isGameplayFeaturesVisible'; gpFeaturesCollection.length &gt; 0"/>
 		<bind name="collectionDH" value="CC.module; 'unpurchasableModuleCollection'; 'cannotBuy'"/>
 		<bind name="watch" value="'hasUnpurchasableModules'; unpurchasableModuleCollection.length &gt; 0"/>
 		<bind name="soundOn" value="'addedToStage'; 'management'; 'dock_inset'"/>
@@ -181,8 +184,43 @@
 		<bind name="dispatch" value="'addedToStage'; 'delayedAddedToStage'; {}; SC.Common.UBSCOPE_EVENT_DIRECTIONS.NONE; 0.1"/>
 		<bind name="catch" value="'delayedAddedToStage'; {isScreenOpened: true}"/>
 		<block>
-			<bind name="appear" value="'shipIdForModuleInsetChanged'; 0; 0; {visible: 0}; {visible: 0}"/>
-			<bind name="appear" value="'lagAfterChangedShipIdForModuleInset'; 0; 0; {visible: 1}; {visible: 1}"/>
+			<bind name="visible" value="isEventShip"/>
+			<bind name="appear" value="'shipIdForModuleInsetChanged'; 0; 0; {alpha: 0}; {alpha: 0}"/>
+			<bind name="appear" value="'lagAfterChangedShipIdForModuleInset'; 0; 0; {alpha: 1}; {alpha: 1}"/>
+			<styleClass value="$FullsizeAbsolute"/>
+			<style>
+				<align value="middle|center"/>
+			</style>
+			<bind name="appear" value="'addedToStage'; 0.15; windowAppearLag + 3 * 0.075; {alpha: 0, top: 10}; {alpha: 1, top: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
+			<bind name="appear" value="'startHide'; 0.15; 3 * 0.055; {alpha: 1, top: 0}; {alpha: 0, top: -10}; SC.Common.EASING_FUNCTIONS.IN_QUAD"/>
+			<block>
+				<styleClass value="$EyeLevelVAlignedDockWindow"/>
+				<style>
+					<width value="100%"/>
+				</style>
+				<bind name="appear" value="'addedToStage'; 0.15; 0; {alpha: 0, top: 10}; {alpha: 1, top: 0}"/>
+				<block>
+					<styleClass value="$MiddleAligned"/>
+					<style>
+						<marginTop value="16px"/>
+						<marginBottom value="16px"/>
+					</style>
+					<block type="text">
+						<styleClass value="$TextDefaultBold17NM"/>
+						<style>
+							<textAlign value="center"/>
+							<maxWidth value="480"/>
+						</style>
+						<bind name="class" value="'$FontColorOrange'"/>
+						<bind name="text" value="toUpperCase(tr('IDS_STEQ_EQUIPMENT_NOT_AVAILABLE'))"/>
+					</block>
+				</block>
+			</block>
+		</block>
+		<block>
+			<bind name="visible" value="!isEventShip"/>
+			<bind name="appear" value="'shipIdForModuleInsetChanged'; 0; 0; {alpha: 0}; {alpha: 0}"/>
+			<bind name="appear" value="'lagAfterChangedShipIdForModuleInset'; 0; 0; {alpha: 1}; {alpha: 1}"/>
 			<bind name="appear" value="'addedToStage'; 0; 0; {alpha: 0}; {alpha: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
 			<bind name="appear" value="'lagAfterAddedToStage'; 0.15; 2*0.075; {alpha: 0, top: 10}; {alpha: 1, top: 0}; SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
 			<styleClass value="$Fullsize"/>
@@ -223,8 +261,16 @@
 							<style>
 								<width value="100%"/>
 							</style>
-							<bind name="style" value="'marginBottom'; isSpecialPointsVisible ? '24px' : 0"/>
+							<bind name="style" value="'marginBottom'; isSpecialPointsVisible || isGameplayFeaturesVisible ? '24px' : 0"/>
 							<bind name="instance" value="hasUnpurchasableModules ? 'ShipParallelModulesLayout' : 'ShipModulesLayout'; {}"/>
+						</block>
+						<block>
+							<bind name="visible" value="isGameplayFeaturesVisible"/>
+							<style>
+								<width value="100%"/>
+							</style>
+							<bind name="style" value="'marginBottom'; isSpecialPointsVisible ? '24px' : 0"/>
+							<bind name="instance" value="'GameplayFeaturesLayout'; {}"/>
 						</block>
 						<block>
 							<bind name="visible" value="isSpecialPointsVisible"/>
