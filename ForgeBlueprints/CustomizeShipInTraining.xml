@@ -1,0 +1,45 @@
+<mod name="CustomizeShipInTraining" version="1.0.0">
+  <requires installer=">=1.0.0"/>
+
+  <!-- Append the toggle bar + inset host to the training-room modal. -->
+  <ubBuildBlock name="ModalWindowTrainingRoom">
+    <insert into=".">
+      <block>
+        <bind name="visible" value="windowInset != 0"/>
+        <style>
+          <width value="100%"/>
+          <height value="100%"/>
+          <top value="10%"/>
+          <align value="center"/>
+        </style>
+        <styleClass value="$FullsizeAbsolute"/>
+        <bind name="var" value="{isShipCustomizeVisible: false, isCrewCustomizeVisible: false}"/>
+        <bind name="catch" value="'shipCustomizeVisibleChanged'; {isShipCustomizeVisible: !isShipCustomizeVisible, isCrewCustomizeVisible: false}"/>
+        <bind name="catch" value="'crewCustomizeVisibleChanged'; {isCrewCustomizeVisible: !isCrewCustomizeVisible, isShipCustomizeVisible: false}"/>
+        <block>
+          <!-- modules and upgrades -->
+          <bind name="instance" value="'DefaultButton'; {_width: '240px', _enabled: true, _label: isShipCustomizeVisible ? 'IDS_CLOSE' : 'IDS_SHIP_MANAGEMENT_MODULES_AND_MODERNIZATIONS_BLOCK_HEADER', _dispatch: 'shipCustomizeVisibleChanged'}"/>
+          <!-- crew -->
+          <bind name="instance" value="'DefaultButton'; {_width: '240px', _enabled: true, _label: isCrewCustomizeVisible ? 'IDS_CLOSE' : 'IDS_CREW', _dispatch: 'crewCustomizeVisibleChanged'}"/>
+        </block>
+        <block>
+          <style>
+            <width value="90%"/>
+            <height value="80%"/>
+          </style>
+          <bind name="instance" value="'ShipManagementMainInsetForMod'; isShipCustomizeVisible ? {} : null"/>
+          <bind name="instance" value="'ModalWindowCrewManagement'; isCrewCustomizeVisible ? {} : null"/>
+        </block>
+      </block>
+    </insert>
+  </ubBuildBlock>
+
+  <!-- The port's ship-management inset under our own name. The two carousel binds go:
+       there is no ship carousel behind the training-room modal, so the margin they
+       compute would only push the layout. -->
+  <ubBuildBlock name="ShipManagementMainInsetForMod">
+    <copy from="gui/unbound/markup.xml" select="block[@className='ShipManagementMainInset']/*" into="."/>
+    <remove select="./bind[@name='watch'][contains(@value,'curRowCountIndex')]"/>
+    <remove select=".//bind[@name='style'][contains(@value,'carouselRows')]"/>
+  </ubBuildBlock>
+</mod>
